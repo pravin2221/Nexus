@@ -1,79 +1,41 @@
 from flask import Flask, jsonify
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_cors import CORS
-
 from config import Config
-from models import init_db, seed_game_flags, cleanup_expired_sessions
-from routes import avenger_bp, game_bp, nexus_bp
-
+from extensions import jwt, limiter
+from models import init_db, seed_game_flags
+from routes import auth_bp, game_bp, leaderboard_bp
 
 def create_app():
-    """NEXUS Game Application Factory."""
+    """NEXUS Game v2.0 Application Factory (Team Auth)."""
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Initialize extensions
-    CORS(app, supports_credentials=True)  # Enable credentials for cookies
+    # Extensions
+    CORS(app)
+    jwt.init_app(app)
+    limiter.init_app(app)
     
-    limiter = Limiter(
-        key_func=get_remote_address,
-        app=app,
-        default_limits=[Config.RATELIMIT_DEFAULT],
-        storage_uri=Config.RATELIMIT_STORAGE_URI
-    )
+    # Register Blueprints
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(game_bp, url_prefix="/api/game")
+    app.register_blueprint(leaderboard_bp, url_prefix="/api/leaderboard")
     
-    # Register NEXUS blueprints
-    app.register_blueprint(avenger_bp, url_prefix="/api/avenger")
-    app.register_blueprint(game_bp, url_prefix="/api")
-    app.register_blueprint(nexus_bp, url_prefix="/api/nexus")
-    
-    # Health check endpoint
-    @app.route("/api/health")
-    def health_check():
-        return jsonify({
-            "status": "healthy",
-            "message": "NEXUS Game Backend",
-            "version": "2.0"
-        })
-    
-    # Root endpoint
+    # Root Endpoint
     @app.route("/")
     def root():
         return jsonify({
-            "message": "NEXUS - Avengers Infinity Stone Quest",
-            "endpoints": {
-                "health": "/api/health",
-                "avenger": "/api/avenger/*",
-                "game": "/api/*",
-                "nexus": "/api/nexus/*"
-            }
+            "message": "NEXUS v2.0 - Team Authentication System",
+            "version": "2.0.0",
+            "status": "ONLINE"
         })
-    
-    # Initialize database and seed flags
+        
+    # Database Init
     with app.app_context():
         init_db()
         seed_game_flags()
-        cleanup_expired_sessions()
-    
-    # Error handlers
-    @app.errorhandler(404)
-    def not_found(error):
-        return jsonify({"error": "Endpoint not found"}), 404
-    
-    @app.errorhandler(500)
-    def internal_error(error):
-        return jsonify({"error": "Internal server error"}), 500
-    
+        
     return app
-
 
 if __name__ == "__main__":
     app = create_app()
-    print("🚀 NEXUS Backend Starting...")
-    print("📍 Endpoints:")
-    print("   - Health: http://localhost:5000/api/health")
-    print("   - Avenger: http://localhost:5000/api/avenger/*")
-    print("   - Game: http://localhost:5000/api/*")
-    print("   - Nexus: http://localhost:5000/api/nexus/*")
     app.run(debug=True, host="0.0.0.0", port=5000)
