@@ -1,7 +1,2 @@
 # NEXUS Middleware package
-from middleware.session import (
-    session_required,
-    get_or_create_session,
-    update_session,
-    validate_session_integrity
-)
+from middleware.auth import strong_auth_required
