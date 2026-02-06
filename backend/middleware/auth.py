@@ -1,41 +1,55 @@
 from functools import wraps
-from flask import jsonify
-from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-from bson import ObjectId
-from models import users_collection
+from flask import request, jsonify
+from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
+from models import teams_collection
+from datetime import datetime, timedelta
 
-
-def admin_required():
+def strong_auth_required(f):
     """
-    Decorator to require admin privileges.
-    Must be used after @jwt_required().
+    Strong Authentication Decorator
+    - Verifies JWT presence and validity
+    - Enforces Strict 3-Hour Expiry (Server-Side Check)
+    - Verifies Team existence in DB
     """
-    def wrapper(fn):
-        @wraps(fn)
-        def decorator(*args, **kwargs):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            # 1. Verify standard JWT signature
             verify_jwt_in_request()
-            user_id = get_jwt_identity()
             
-            user = users_collection.find_one({"_id": ObjectId(user_id)})
-            if not user:
-                return jsonify({"error": "User not found"}), 404
+            # 2. Get Claims & Identity
+            claims = get_jwt()
+            team_name = get_jwt_identity()
             
-            if not user.get("is_admin", False):
-                return jsonify({"error": "Admin access required"}), 403
-            
-            return fn(*args, **kwargs)
-        return decorator
-    return wrapper
+            # 3. Server-Side Expiry Check (Double Validation)
+            # Although JWT has 'exp', we check login_time claim vs current time
+            login_time_str = claims.get("login_time")
+            if login_time_str:
+                login_timestamp = float(login_time_str)
+                login_dt = datetime.fromtimestamp(login_timestamp)
+                
+                # STRICT 3-HOUR LIMIT
+                if datetime.utcnow() > login_dt + timedelta(hours=3):
+                    return jsonify({"error": "Session Expired (3 Hours Limit). Please Login Again."}), 401
 
+            # 4. User-Agent Binding (Anti-Theft)
+            original_ua = claims.get("ua")
+            current_ua = request.headers.get("User-Agent", "")
+            if original_ua and original_ua != current_ua:
+                # Token being used on different browser/device -> ALARM
+                return jsonify({"error": "Security Violation: Session Bound to Original Device"}), 403
 
-def get_current_user():
-    """Get current user document from JWT identity."""
-    user_id = get_jwt_identity()
-    if not user_id:
-        return None
-    
-    try:
-        user = users_collection.find_one({"_id": ObjectId(user_id)})
-        return user
-    except Exception:
-        return None
+            # 5. Verify Team Still Exists (Security)
+            team = teams_collection.find_one({"team_name": team_name})
+            if not team:
+                return jsonify({"error": "Team not found or banned"}), 401
+                
+            # Attach team to request for use in route
+            request.team = team
+            
+        except Exception as e:
+            return jsonify({"error": f"Authentication Failed: {str(e)}"}), 401
+            
+        return f(*args, **kwargs)
+        
+    return decorated_function

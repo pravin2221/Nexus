@@ -1,62 +1,40 @@
 from flask import Flask, jsonify
-from flask_jwt_extended import JWTManager
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from flask_cors import CORS
-
 from config import Config
-from models import init_db
-from routes.auth import auth_bp
-from routes.flags import flags_bp
-from routes.leaderboard import leaderboard_bp
-from routes.admin import admin_bp
-
+from extensions import jwt, limiter
+from models import init_db, seed_game_flags
+from routes import auth_bp, game_bp, leaderboard_bp
 
 def create_app():
-    """Application factory."""
+    """NEXUS Game v2.0 Application Factory (Team Auth)."""
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Initialize extensions
+    # Extensions
     CORS(app)
-    jwt = JWTManager(app)
-    limiter = Limiter(
-        key_func=get_remote_address,
-        app=app,
-        default_limits=[Config.RATELIMIT_DEFAULT],
-        storage_uri=Config.RATELIMIT_STORAGE_URI
-    )
+    jwt.init_app(app)
+    limiter.init_app(app)
     
-    # JWT error handlers
-    @jwt.expired_token_loader
-    def expired_token_callback(jwt_header, jwt_payload):
-        return jsonify({"error": "Token has expired"}), 401
-    
-    @jwt.invalid_token_loader
-    def invalid_token_callback(error):
-        return jsonify({"error": "Invalid token"}), 401
-    
-    @jwt.unauthorized_loader
-    def missing_token_callback(error):
-        return jsonify({"error": "Authorization token required"}), 401
-    
-    # Register blueprints
+    # Register Blueprints
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(flags_bp, url_prefix="/api/flags")
+    app.register_blueprint(game_bp, url_prefix="/api/game")
     app.register_blueprint(leaderboard_bp, url_prefix="/api/leaderboard")
-    app.register_blueprint(admin_bp, url_prefix="/api/admin")
     
-    # Health check endpoint
-    @app.route("/api/health")
-    def health_check():
-        return jsonify({"status": "healthy", "message": "NEXUS EYE CTF Platform"})
-    
-    # Initialize database indexes
+    # Root Endpoint
+    @app.route("/")
+    def root():
+        return jsonify({
+            "message": "NEXUS v2.0 - Team Authentication System",
+            "version": "2.0.0",
+            "status": "ONLINE"
+        })
+        
+    # Database Init
     with app.app_context():
         init_db()
-    
+        seed_game_flags()
+        
     return app
-
 
 if __name__ == "__main__":
     app = create_app()
