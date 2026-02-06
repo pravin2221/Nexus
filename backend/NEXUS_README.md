@@ -1,209 +1,104 @@
-# NEXUS Backend - Avengers Infinity Stone Quest
+# 🌌 NEXUS: The Infinity Stone Quest
 
-## 🎮 Overview
+> **"Dread it. Run from it. Destiny arrives all the same."**
 
-The **NEXUS Backend** is a secure, server-controlled game system for the Avengers Infinity Stone Quest. It implements strict pathflow enforcement, anonymous session management, anti-cheat mechanisms, and comprehensive analytics.
+![NEXUS Banner](https://i.imgur.com/example_banner.png)
 
-## ✨ Features
+## 🚀 Mission Overview
 
-### 🔐 Session Management (Job 1)
-- Anonymous session creation with UUID
-- HTTP-only cookies (secure, no JavaScript access)
-- Browser fingerprinting for soft validation
-- Auto-expiry after 2 hours of inactivity
-- Session restoration on page refresh
+**NEXUS** is an advanced, high-security CTF-style game engine designed for the ultimate Avengers-themed treasure hunt. Unlike traditional CTFs, NEXUS enforces a strict **2-Stage Game Mechanic** and **Military-Grade Authentication**.
 
-### 🎯 Pathflow Enforcement (Job 2)
-- Strict Avenger path activation
-- Puzzle sequence validation (e.g., Thor runes: 4→1→8→3)
-- Prevents URL jumping and skipping
-- Server-controlled navigation flow
-
-### 💎 Flag & Stone Validation (Job 3)
-- SHA-256 flag hashing (never stored in plaintext)
-- Atomic stone awarding (MongoDB `$addToSet`)
-- Duplicate submission prevention
-- One stone per Avenger (6 total)
-
-### 🛡️ Anti-Cheat & Analytics (Job 4)
-- Rate limiting: 10 submissions per minute
-- Max 5 wrong attempts per Avenger
-- 5-minute cooldown after max attempts
-- Comprehensive event logging
-- Time-based anomaly detection
-
-### 🏆 Final Nexus Control (Job 5)
-- 6-stone verification for unlock
-- Completion timestamp tracking
-- Analytics retrieval
-- Optional leaderboard
+Your mission: Authenticate with your team, traverse the MCU timeline, solve ancient riddles, and collect all **6 Infinity Stones** before the universe (or your session) expires.
 
 ---
 
-## 🚀 Quick Start
+## 🔐 Security Architecture (Military-Grade)
 
-### 1. Install Dependencies
+The system is fortified with multiple layers of defense to prevent unauthorized access and bypassing.
 
-```bash
-pip install -r requirements.txt
-```
+- **🛡️ Strong Authentication**: 
+  - Teams must register with unique names and strong passwords (Bcrypt hashing).
+  - No anonymous access allowed.
 
-### 2. Initialize Database
+- **⏳ Time-Locked Sessions**: 
+  - **Strict 3-Hour Limit**: Sessions are governed by a tamper-proof JWT architecture.
+  - **Server-Side Enforcement**: Even if you modify the token, the backend rejects expired sessions instantly.
 
-```bash
-python seed_nexus.py
-```
+- **🕵️ Anti-Theft & Hijacking Protection**:
+  - **User-Agent Binding**: Tokens are cryptographically bound to your specific browser/device.
+  - **IP Fingerprinting**: Anomaly detection blocks suspicious location hops.
 
-### 3. Start Server
-
-```bash
-python app.py
-```
-
-Server runs on `http://localhost:5000`
+- **🚦 Rate Limiting**:
+  - **Login Protection**: 10 attempts/minute to prevent brute-forcing.
+  - **Game Integrity**: 10 submissions/minute to stop script-kiddies.
 
 ---
 
-## 📡 API Endpoints
+## 🎮 Game Logic: The 2-Stage Protocol
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/avenger/start` | POST | Start Avenger path |
-| `/api/avenger/sequence` | POST | Validate puzzle sequence |
-| `/api/avenger/status` | GET | Get game status |
-| `/api/submit-flag` | POST | Submit flag for Avenger |
-| `/api/stones` | GET | Get collected stones |
-| `/api/nexus/status` | GET | Check if Nexus unlocked |
-| `/api/nexus/complete` | POST | Record completion |
-| `/api/nexus/analytics` | GET | Get session analytics |
+Mere flag submission is insufficient. You must prove your worthiness.
 
-**Full API Documentation**: See [`API_DOCS.md`](./API_DOCS.md)
+1.  **🚩 STAGE 1: The Flag**
+    - Find the hidden flag in the frontend/assets.
+    - **Submit**: `/api/game/submit-flag`
+    - **Reward**: Base Points + **The Riddle**.
 
----
-
-## 🎯 Default Test Flags
-
-**⚠️ FOR TESTING ONLY - CHANGE IN PRODUCTION!**
-
-```
-Iron Man:        FLAG{ARC_REACTOR_CORE}
-Thor:            FLAG{BIFROST_GUARDIAN}
-Hulk:            FLAG{GAMMA_RADIATION}
-Captain America: FLAG{SUPER_SOLDIER}
-Black Widow:     FLAG{RED_ROOM_PROTOCOL}
-Hawkeye:         FLAG{NEVER_MISS}
-```
+2.  **💎 STAGE 2: The Stone**
+    - Solve the riddle revealed in Stage 1.
+    - **Submit**: `/api/game/submit-answer`
+    - **Reward**: **Infinity Stone** + Bonus Points.
 
 ---
 
-## 🗂️ Project Structure
+## 🛠️ Tech Stack & Setup
 
-```
-backend/
-├── app.py                  # Main application
-├── config.py              # Configuration
-├── requirements.txt       # Dependencies
-├── seed_nexus.py         # Database initialization
-├── API_DOCS.md           # API documentation
-├── models/
-│   ├── database.py       # MongoDB collections
-│   └── __init__.py
-├── middleware/
-│   ├── session.py        # Session management
-│   └── __init__.py
-└── routes/
-    ├── avenger.py        # Pathflow control
-    ├── game.py           # Flag submission
-    ├── nexus.py          # Final unlock
-    └── __init__.py
-```
+### Requirements
+- Python 3.10+
+- MongoDB 6.0+
 
----
+### 🚀 Quick Start
 
-## 🔧 Configuration
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/nexus/backend.git
+    cd backend
+    ```
 
-Edit `config.py` or create `.env`:
+2.  **Install Cyber-Dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-```env
-MONGO_URI=mongodb://localhost:27017
-MONGO_DB_NAME=nexus_game
-SECRET_KEY=your-secret-key-here
-```
+3.  **Initialize the Quantum Database**
+    ```bash
+    # Seeds the database with Avenger flags and cryptographic secrets
+    python -c "from models import init_db, seed_game_flags; from app import create_app; app = create_app(); app.app_context().push(); init_db(); seed_game_flags()"
+    ```
 
-**Game Settings**:
-- Session expiry: 2 hours
-- Max attempts: 5 per Avenger
-- Cooldown: 5 minutes
-- Rate limit: 10 submissions/minute
+4.  **Ignite the Engine**
+    ```bash
+    python app.py
+    ```
 
 ---
 
-## 🧪 Testing
+## 📡 API Reference
 
-### Health Check
-```bash
-curl http://localhost:5000/api/health
-```
-
-### Start Path
-```bash
-curl -X POST http://localhost:5000/api/avenger/start \
-  -H "Content-Type: application/json" \
-  -d '{"avenger": "ironman"}' \
-  -c cookies.txt
-```
-
-### Submit Flag
-```bash
-curl -X POST http://localhost:5000/api/submit-flag \
-  -H "Content-Type: application/json" \
-  -d '{"avenger": "ironman", "flag": "FLAG{ARC_REACTOR_CORE}"}' \
-  -b cookies.txt
-```
+| Endpoint | Method | Rate Limit | Description |
+|----------|--------|------------|-------------|
+| `/api/auth/signup` | POST | 5/min | Recruit new team |
+| `/api/auth/login` | POST | 10/min | Authenticate & Start Timer |
+| `/api/game/submit-flag` | POST | 10/min | submit Flag (Stage 1) |
+| `/api/game/submit-answer` | POST | 10/min | Claim Stone (Stage 2) |
+| `/api/leaderboard` | GET | Unlimited | View Global Rankings |
+| `/api/leaderboard/activity` | GET | Unlimited | View Team Flight Logs |
 
 ---
 
-## 🔗 Frontend Integration
+## ⚠️ Integrity Rules
 
-**CRITICAL**: Always include `credentials: 'include'` in fetch requests:
+1.  **One Stone Rule**: The universe permits only one of each stone per team.
+2.  **Sequential Access**: You cannot answer a Riddle without first finding the Flag.
+3.  **No Bypassing**: Direct API calls without valid JWTs are instantly rejected.
 
-```javascript
-const response = await fetch('http://localhost:5000/api/avenger/start', {
-  method: 'POST',
-  credentials: 'include',  // Required for cookies
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ avenger: 'ironman' })
-});
-```
-
----
-
-## 📊 Database Collections
-
-- **sessions**: Player game state
-- **game_flags**: Hashed Avenger flags
-- **analytics**: Event logs
-
----
-
-## 🚨 Production Checklist
-
-- [ ] Change default flags in `models/database.py`
-- [ ] Set `SESSION_COOKIE_SECURE = True`
-- [ ] Update `SECRET_KEY` in `.env`
-- [ ] Configure MongoDB authentication
-- [ ] Set up HTTPS
-- [ ] Test all 6 Avenger paths
-- [ ] Verify anti-cheat mechanisms
-
----
-
-## 📝 License
-
-Built for NEXUS - Avengers Infinity Stone Quest
-
----
-
-## 🎯 Summary
-
-**"The NEXUS backend securely manages anonymous player sessions, enforces strict puzzle pathflows, validates all flags and sequences server-side, awards Infinity Stones atomically, prevents cheating through rate-limiting and state validation, tracks detailed analytics, and unlocks the final Nexus only when all six Avengers are legitimately completed."**
+> **"I am Inevitable."** - Thanos
