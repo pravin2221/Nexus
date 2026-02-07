@@ -2,6 +2,7 @@
 
 ## 🎯 System Overview
 
+
 **NEXUS v2.0** is a military-grade, team-based CTF game engine featuring **strong authentication**, **2-stage game mechanics**, and **strict session management**. Unlike the anonymous v1.0, this version requires team registration, enforces 3-hour session limits, and implements device-bound JWT tokens.
 
 ---
