@@ -31,8 +31,12 @@ def create_app():
         
     # Database Init
     with app.app_context():
-        init_db()
-        seed_game_flags()
+        try:
+            init_db()
+            seed_game_flags()
+        except Exception as e:
+            print(f"⚠️ WARNING: Database initialization failed: {e}")
+            print("⚠️ The application will start, but database features may not work until connection is established.")
         
     return app
 
