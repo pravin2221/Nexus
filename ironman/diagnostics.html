@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnostics Panel</title>
+    <style>
+        body {
+            background:black;
+            color:#00ffea;
+            font-family: monospace;
+            text-align:center;
+            padding-top: 40px;
+        }
+        .pulse {
+            background:#003c47;
+            border:1px solid #00ffea;
+            padding: 15px 30px;
+            margin: 20px;
+            cursor:pointer;
+        }
+        .pulse:hover { background:#005c73; }
+    </style>
+</head>
+<body>
+
+<h2>Stark Diagnostics Terminal</h2>
+
+<pre>
+> Running scan...
+> Arc Reactor unstable.
+> Select correct frequency pulse.
+</pre>
+
+<button class="pulse">Pulse</button>
+<button class="pulse">Pulse</button>
+<button class="pulse">Pulse</button>
+
+<script>
+document.querySelectorAll(".pulse")[1].onclick = function() {
+    sessionStorage.setItem("ironman_unlock", "1");
+    window.location.href = "/core.html";
+};
+document.querySelectorAll(".pulse")[0].onclick = function() {
+    alert("Incorrect pulse frequency!");
+};
+document.querySelectorAll(".pulse")[2].onclick = function() {
+    alert("Reactor destabilized! Try again.");
+};
+</script>
+
+</body>
+</html>
