@@ -1,0 +1,521 @@
+/* === Marvel · Captain America shield === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0d0d0d;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% 50%, rgba(178, 34, 52, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 60% at 50% 120%, rgba(0, 40, 104, 0.15) 0%, transparent 45%);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #e8e8e8;
+  overflow-x: auto;
+}
+
+/* Order numbers – circular at the edge, anti-clockwise: 2, 5, 1, 4, 3 (positioned so they don’t block the shield) */
+.order-numbers {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.order-numbers .order-num {
+  pointer-events: auto;
+}
+
+.order-num {
+  position: absolute;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: transparent;
+  /* Hidden by default */
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+  font-family: system-ui, sans-serif;
+  text-shadow: none;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  /* Prevent selection handles from revealing them */
+}
+
+.order-num[data-num="2"]:hover {
+  color: #002868;
+  text-shadow: 0 0 16px rgba(0, 40, 104, 0.6);
+}
+
+.order-num[data-num="5"]:hover {
+  color: #B22234;
+  text-shadow: 0 0 16px rgba(178, 34, 52, 0.6);
+}
+
+.order-num[data-num="1"]:hover {
+  color: #fff;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
+}
+
+.order-num[data-num="4"]:hover {
+  color: #B22234;
+  text-shadow: 0 0 16px rgba(178, 34, 52, 0.6);
+}
+
+.order-num[data-num="3"]:hover {
+  color: #fff;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
+}
+
+/* Circle at 48vmin from center; positions so hit area is at edge, not over shield */
+.order-num[data-num="2"] {
+  left: 50%;
+  top: calc(50% - 48vmin);
+}
+
+.order-num[data-num="5"] {
+  left: calc(50% + 45.65vmin);
+  top: calc(50% - 14.83vmin);
+}
+
+.order-num[data-num="1"] {
+  left: calc(50% + 28.22vmin);
+  top: calc(50% + 38.83vmin);
+}
+
+.order-num[data-num="4"] {
+  left: calc(50% - 28.22vmin);
+  top: calc(50% + 38.83vmin);
+}
+
+.order-num[data-num="3"] {
+  left: calc(50% - 45.65vmin);
+  top: calc(50% - 14.83vmin);
+}
+
+/* Zoom – no label, Marvel-style accent */
+.zoom-control {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.zoom-btn {
+  width: 48px;
+  height: 48px;
+  background: #B22234;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-btn::after {
+  content: '+';
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.zoom-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(178, 34, 52, 0.5);
+}
+
+/* Shield container – zoomable; no movement */
+.shield-viewport {
+  position: relative;
+  z-index: 30;
+  transition: transform 0.4s ease;
+  transform-origin: center center;
+}
+
+
+.shield-viewport.zoomed {
+  transform: scale(2.2);
+}
+
+/* Shield wrapper – static (no mouse-follow) */
+.shield-wrapper {
+  position: relative;
+  width: 360px;
+  height: 360px;
+}
+
+/* Shadow behind shield */
+.shield-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 80% 60% at 50% 85%, rgba(0, 0, 0, 0.4) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Tiny direction arrow - only visible when zoomed; points to first stripe (start here) */
+.shield-direction-arrow {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: -24px;
+  left: 50%;
+  margin-left: -10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+.shield-viewport.zoomed .shield-direction-arrow {
+  opacity: 1;
+}
+
+.shield-direction-arrow::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 12px solid #fff;
+  left: 4px;
+  top: 2px;
+  filter: drop-shadow(0 0 2px #000);
+}
+
+/* Shield base */
+.shield {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #002868;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.4),
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    inset 0 0 60px rgba(255, 255, 255, 0.06);
+}
+
+/* Stripe segments – 5 concentric rings; ensure they receive clicks */
+.stripe {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.2s, transform 0.2s;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+}
+
+.stripe:hover {
+  filter: brightness(1.15);
+}
+
+.stripe:active {
+  transform: scale(0.98);
+}
+
+/* 5 rings – inner rings on top so clicks hit the right stripe */
+.stripe-5 {
+  width: 100%;
+  height: 100%;
+  background: #B22234;
+  z-index: 1;
+}
+
+.stripe-4 {
+  width: 84%;
+  height: 84%;
+  background: #fff;
+  z-index: 2;
+}
+
+.stripe-3 {
+  width: 68%;
+  height: 68%;
+  background: #B22234;
+  z-index: 3;
+}
+
+.stripe-2 {
+  width: 52%;
+  height: 52%;
+  background: #fff;
+  z-index: 4;
+}
+
+.stripe-1 {
+  width: 36%;
+  height: 36%;
+  background: #B22234;
+  z-index: 5;
+}
+
+/* Center – blue circle with white star (Cap's shield) */
+.shield-center {
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  border-radius: 50%;
+  background: #002868;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.shield-star {
+  width: 70%;
+  height: 70%;
+  background: #fff;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Letter on hover – wrong order (shuffled) */
+.stripe .letter {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #0d0d0d;
+  opacity: 0;
+  transition: opacity 0.2s;
+  user-select: none;
+  pointer-events: none;
+}
+
+.stripe:nth-child(odd) .letter {
+  color: #fff;
+}
+
+.stripe:hover .letter {
+  opacity: 1;
+}
+
+/* Path reveal – Marvel-style */
+.path-reveal {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 18px 32px;
+  background: rgba(0, 40, 104, 0.92);
+  border: 2px solid #B22234;
+  border-radius: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s, visibility 0.4s;
+  z-index: 50;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.path-reveal.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.path-reveal-b64 {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 1.35rem;
+  letter-spacing: 0.18em;
+  color: #fff;
+  margin: 0;
+}
+
+/* Sequence feedback */
+.sequence-feedback {
+  margin-top: 20px;
+  min-height: 28px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+/* Mission Briefing / Story Clue */
+.mission-briefing {
+  position: fixed;
+  top: 24px;
+  left: 30px;
+  max-width: 320px;
+  padding: 20px;
+  background: rgba(13, 13, 13, 0.85);
+  border-left: 4px solid #B22234;
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  /* Let clicks pass through if it overlaps something interactive (though it shouldn't) */
+}
+
+.mission-briefing h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  color: #B22234;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.mission-briefing p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+.mission-briefing strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.mission-briefing .clue-text {
+  margin-top: 16px;
+  color: #4da6ff;
+  /* A tech-blue for the specific clue */
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 0 0 8px rgba(77, 166, 255, 0.4);
+}
+
+
+/* Tech Overlay Elements */
+.tech-overlay {
+  position: fixed;
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  z-index: 10;
+  text-align: right;
+  line-height: 1.6;
+}
+
+.tech-overlay.top-right {
+  top: 90px;
+  right: 30px;
+  border-right: 2px solid rgba(255, 255, 255, 0.3);
+  padding-right: 12px;
+}
+
+.tech-overlay.top-center {
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: 2px solid #B22234;
+  padding-top: 8px;
+  text-align: center;
+}
+
+.tech-overlay.bottom-right {
+  bottom: 30px;
+  right: 30px;
+  border-right: 2px solid #002868;
+  /* Blue accent */
+  padding-right: 12px;
+  text-align: right;
+}
+
+.tech-overlay.bottom-left {
+  bottom: 30px;
+  left: 30px;
+  border-left: 2px solid #B22234;
+  padding-left: 12px;
+  text-align: left;
+}
+
+.integrity-bar {
+  width: 120px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 6px 0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.integrity-fill {
+  width: 98%;
+  height: 100%;
+  background: #4da6ff;
+  box-shadow: 0 0 8px rgba(77, 166, 255, 0.6);
+  animation: pulse-bar 4s infinite ease-in-out;
+}
+
+@keyframes pulse-bar {
+
+  0%,
+  100% {
+    width: 98%;
+    opacity: 1;
+  }
+
+  50% {
+    width: 96%;
+    opacity: 0.8;
+  }
+}
+
+.tech-overlay .small {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+/* Optional Grid Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.tech-overlay p {
+  margin: 0;
+}
+
+/* Shield positioning for shield.html */
+.shield-page-display {
+  position: fixed;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%) scale(0.85);
+  z-index: 5;
+  pointer-events: none;
+  /* Let clicks pass through unless we want it interactive */
+}
+
+@media (max-width: 1100px) {
+  .shield-page-display {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    margin: 40px auto;
+    display: flex;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arc Reactor Core</title>
+    <style>
+        body {
+            background:black;
+            text-align:center;
+            padding-top:40px;
+            font-family: monospace;
+            color:#00efff;
+        }
+        canvas {
+            border:2px solid #00eaff;
+            margin-top:20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #0a1a1a;
+            margin: 10% auto;
+            padding: 30px;
+            border: 2px solid #00eaff;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(0,234,255,0.5);
+        }
+        .modal h2 {
+            color: #00eaff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00eaff;
+        }
+        .modal p {
+            color: #00eaff;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        .modal input {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #00eaff;
+            background: #001a1a;
+            color: #00eaff;
+            border-radius: 5px;
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .modal input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00eaff;
+        }
+        .modal button {
+            padding: 10px 30px;
+            margin: 10px;
+            border: 2px solid #00eaff;
+            background: rgba(0,234,255,0.1);
+            color: #00eaff;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .modal button:hover {
+            background: rgba(0,234,255,0.3);
+            box-shadow: 0 0 10px #00eaff;
+        }
+        .modal .error {
+            color: #ff3333;
+            margin-top: 10px;
+            display: none;
+        }
+        .success-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        .success-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            max-width: 600px;
+        }
+        .success-content img {
+            max-width: 100%;
+            max-height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,234,255,0.8);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Arc Reactor Core</h1>
+<p>Click the correct energy beam to stabilize the core.</p>
+
+<canvas id="reactor" width="400" height="400"></canvas>
+
+<!-- Tony Stark Verification Modal -->
+<div id="tonyVerifyModal" class="modal">
+    <div class="modal-content">
+        <h2>STARK AUTHENTICATION</h2>
+        <p>Love you <span style="color:#ffaa00">___</span></p>
+        <input type="text" id="answerInput" placeholder="Answer..." />
+        <br>
+        <button onclick="verifyAnswer()">Verify</button>
+        <button onclick="cancelVerification()">Cancel</button>
+        <div class="error" id="errorMsg">Incorrect answer. Try again.</div>
+    </div>
+</div>
+
+<!-- Success Modal with Image -->
+<div id="successModal" class="success-modal">
+    <div class="success-content">
+        <img src="https://i.pinimg.com/736x/7c/32/a5/7c32a5299546135c7246ff2ce968b4b2.jpg" alt="Tony Stark Cookie" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23000%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%2300eaff%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ETony Stark eating a cookie%3C/text%3E%3C/svg%3E'">
+    </div>
+</div>
+
+<script>
+// Block direct access
+if (sessionStorage.getItem("ironman_unlock") !== "1") {
+    document.body.innerHTML = "<h1 style='color:red'>ACCESS DENIED</h1>";
+}
+
+
+function getCookie(name) {
+    let nameEQ = name + "=";
+    let cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.indexOf(nameEQ) === 0) {
+            return cookie.substring(nameEQ.length);
+        }
+    }
+    return null;
+}
+
+// Set cookie if not exists
+if (getCookie("isTony") === null) {
+    document.cookie = "isTony=0; path=/";
+}
+
+// Check if user modified cookie to 1
+if (getCookie("isTony") === "1") {
+    // Obfuscated flag (Base64 encoded)
+    let encodedFlag = "cGljb0NURnt0MG55X3N0NHJrXzFzX2lyMG5tNG59";
+    let decodedFlag = atob(encodedFlag);
+    
+    // Show flag
+    let flagDiv = document.createElement("div");
+    flagDiv.style.cssText = "margin-top:30px; padding:20px; border:2px solid #00ff00; background:#001a00; color:#00ff00; font-weight:bold; font-size:1.2em; border-radius:5px;";
+    flagDiv.innerHTML = "🚩 FLAG: <code>" + decodedFlag + "</code>";
+    document.body.appendChild(flagDiv);
+}
+
+// Draw Arc Reactor
+let c = document.getElementById("reactor");
+let ctx = c.getContext("2d");
+
+// Reactor drawing
+function drawReactor() {
+    ctx.fillStyle = "#001016";
+    ctx.fillRect(0,0,400,400);
+
+    // Outer ring
+    ctx.beginPath();
+    ctx.strokeStyle = "#00eaff";
+    ctx.lineWidth = 8;
+    ctx.arc(200,200,150,0,2*Math.PI);
+    ctx.stroke();
+
+    // Beams (fake)
+    for (let i=0; i<8; i++){
+        let angle = i * (Math.PI/4);
+        ctx.beginPath();
+        ctx.strokeStyle = "#005f75";
+        ctx.lineWidth = 5;
+        ctx.moveTo(200,200);
+        ctx.lineTo(200+Math.cos(angle)*120, 200+Math.sin(angle)*120);
+        ctx.stroke();
+    }
+
+    // Real hitbox beam (no visual clue)
+    // You can hide this or make it subtle
+}
+drawReactor();
+
+// Handle clicks (inspect-proof)
+c.onclick = function(e) {
+    let rect = c.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
+
+    // Secret hitbox
+    if (x >= 190 && x <= 210 && y >= 80 && y <= 120) {
+        showVerificationModal();
+    } else {
+        alert("Incorrect beam detected!");
+    }
+};
+
+// Show verification modal
+function showVerificationModal() {
+    let modal = document.getElementById("tonyVerifyModal");
+    modal.style.display = "block";
+    document.getElementById("answerInput").focus();
+    document.getElementById("errorMsg").style.display = "none";
+}
+
+// Verify answer (obfuscated)
+function verifyAnswer() {
+    let input = document.getElementById("answerInput").value.trim();
+    
+    // Obfuscated check: 3000 encoded
+    let _correct = String.fromCharCode(51,48,48,48); // "3000"
+    
+    if (input === _correct) {
+        let modal = document.getElementById("tonyVerifyModal");
+        modal.style.display = "none";
+        
+        // Show success image modal
+        let successModal = document.getElementById("successModal");
+        successModal.style.display = "block";
+        
+        // Close success modal on click
+        successModal.onclick = function() {
+            successModal.style.display = "none";
+        };
+    } else {
+        document.getElementById("errorMsg").style.display = "block";
+        document.getElementById("answerInput").value = "";
+        document.getElementById("answerInput").focus();
+    }
+}
+
+// Cancel verification
+function cancelVerification() {
+    let modal = document.getElementById("tonyVerifyModal");
+    modal.style.display = "none";
+    document.getElementById("answerInput").value = "";
+    document.getElementById("errorMsg").style.display = "none";
+}
+
+// Allow Enter key to verify
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && document.getElementById("tonyVerifyModal").style.display === "block") {
+        verifyAnswer();
+    }
+});
+</script>
+
+</body>
+</html>

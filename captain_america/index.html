@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cap's Shield</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="mission-briefing">
+    <h3>// MISSION BRIEFING //</h3>
+    <p><strong>SUBJECT:</strong> VIBRANIUM SHIELD REPLICA</p>
+    <p><strong>STATUS:</strong> LOCKED</p>
+    <p><strong>INTEL:</strong> The stripes resonate with a specific frequency sequence.</p>
+    <p class="clue-text">SEQUENCE ENCRYPTED. OBSERVE PERIMETER SIGNALS.</p>
+    <p class="sub-text">Interact to unlock.</p>
+  </div>
+
+  <div class="order-numbers">
+    <span class="order-num" data-num="2">2</span>
+    <span class="order-num" data-num="5">5</span>
+    <span class="order-num" data-num="1">1</span>
+    <span class="order-num" data-num="4">4</span>
+    <span class="order-num" data-num="3">3</span>
+  </div>
+
+  <div class="tech-overlay top-center">
+    <p>KEY_GEN: <span id="keyGen">AE-39</span></p>
+  </div>
+
+  <div class="tech-overlay top-right">
+    <p>COORDS: 40.7128° N, 74.0060° W</p>
+    <p>TARGET: ACTIVE</p>
+    <p>SCANNING...</p>
+  </div>
+
+  <div class="zoom-control">
+    <button type="button" class="zoom-btn" id="zoomBtn" aria-label="Toggle zoom"></button>
+  </div>
+
+  <div class="shield-viewport" id="shieldViewport">
+    <div class="shield-wrapper">
+      <div class="shield-direction-arrow" aria-hidden="true"></div>
+
+      <div class="shield" id="shield">
+        <div class="stripe stripe-5" data-stripe="5"><span class="letter">r</span></div>
+        <div class="stripe stripe-4" data-stripe="4"><span class="letter">t</span></div>
+        <div class="stripe stripe-3" data-stripe="3"><span class="letter">i</span></div>
+        <div class="stripe stripe-2" data-stripe="2"><span class="letter">n</span></div>
+        <div class="stripe stripe-1" data-stripe="1"><span class="letter">e</span></div>
+        <div class="shield-center">
+          <span class="shield-star" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="sequence-feedback" id="feedback" aria-live="polite"></p>
+
+  <div class="path-reveal" id="pathReveal">
+    <p class="path-reveal-b64" id="pathRevealB64"></p>
+  </div>
+
+  <script>
+    (function () {
+      const CORRECT_ORDER = [2, 5, 1, 4, 3];
+      const zoomBtn = document.getElementById('zoomBtn');
+      const shieldViewport = document.getElementById('shieldViewport');
+      const pathReveal = document.getElementById('pathReveal');
+      const feedback = document.getElementById('feedback');
+      let sequence = [];
+      let solved = false;
+
+      zoomBtn.addEventListener('click', function () {
+        shieldViewport.classList.toggle('zoomed');
+      });
+
+      document.getElementById('shield').addEventListener('click', function (e) {
+        if (solved) return;
+        const stripe = e.target.closest('.stripe');
+        if (!stripe) return;
+        const num = parseInt(stripe.dataset.stripe, 10);
+        sequence.push(num);
+        feedback.textContent = sequence.join(' → ');
+
+        if (sequence.length === CORRECT_ORDER.length) {
+          const correct = sequence.every(function (val, i) { return val === CORRECT_ORDER[i]; });
+          if (correct) {
+            solved = true;
+            document.getElementById('pathRevealB64').textContent = btoa('/shield');
+            pathReveal.classList.add('visible');
+          } else {
+            sequence = [];
+            feedback.textContent = '';
+          }
+        }
+      });
+    })();
+  </script>
+  <script>
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) ||
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) ||
+        (e.ctrlKey && e.shiftKey && e.keyCode === 67) ||
+        (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+      }
+    });
+  </script>
+  <div class="tech-overlay bottom-left">
+    <p>SHIELD INTEGRITY</p>
+    <div class="integrity-bar">
+      <div class="integrity-fill"></div>
+    </div>
+    <p class="small">STRUCTURAL: 98%</p>
+  </div>
+
+  <div class="tech-overlay bottom-right">
+    <p>SYSTEM_ID: SHIELD-E616</p>
+    <p>VIBRANIUM CORE: ONLINE</p>
+    <p>USER_AUTH: PENDING...</p>
+  </div>
+  <script src="rain.js"></script>
+</body>
+
+</html>

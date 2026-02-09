@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>shield</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .morse-page body {
+      padding: 32px 24px 48px;
+    }
+
+    .shield-story {
+      max-width: 580px;
+      margin: 0 auto 40px;
+      padding: 28px 0;
+      color: rgba(255, 255, 255, 0.92);
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 1.0rem;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      font-weight: bold;
+    }
+
+    .shield-story p {
+      margin: 0 0 1.15em;
+    }
+
+    .shield-story .dialogue {
+      font-style: italic;
+      margin-left: 0.5em;
+      font-size: 1.02em;
+      color: rgba(255, 255, 255, 0.98);
+    }
+
+    .shield-story .hex-code {
+      margin-top: 16px;
+      margin-bottom: 0.2em;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 1.05rem;
+      letter-spacing: 0.18em;
+      color: #fff;
+      word-break: break-all;
+    }
+
+    .morse-container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 32px 40px 48px;
+    }
+
+    .morse-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: center;
+      justify-content: center;
+      min-height: 88px;
+      padding: 28px;
+      border: 3px solid rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      animation: morse-box-flash 2.5s ease-in-out infinite;
+    }
+
+    @keyframes morse-box-flash {
+
+      0%,
+      100% {
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 16px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+      }
+
+      50% {
+        border-color: rgba(178, 34, 52, 0.9);
+        box-shadow: 0 0 20px rgba(178, 34, 52, 0.5), inset 0 0 15px rgba(178, 34, 52, 0.2);
+      }
+    }
+
+    .morse-symbol {
+      width: 14px;
+      height: 26px;
+      background: #fff;
+      border-radius: 3px;
+      opacity: 0.25;
+      transition: opacity 0.12s ease-out;
+    }
+
+    .morse-symbol.on {
+      opacity: 1;
+      animation: morse-blink-red-white 0.3s ease-in-out infinite;
+    }
+
+    @keyframes morse-blink-red-white {
+
+      0%,
+      100% {
+        background: #fff;
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      }
+
+      50% {
+        background: #B22234;
+        box-shadow: 0 0 12px rgba(178, 34, 52, 0.9);
+      }
+    }
+
+    .morse-symbol.dash {
+      width: 32px;
+    }
+
+    .morse-symbol.letter-gap {
+      width: 16px;
+      background: transparent;
+    }
+
+    .morse-symbol.word-gap {
+      width: 24px;
+      background: transparent;
+    }
+
+    /* Rain effect */
+    .rain-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .rain-drop {
+      position: absolute;
+      top: -20vh;
+      width: 2px;
+      border-radius: 2px;
+      animation: rain-fall linear infinite;
+    }
+
+    .rain-drop.red {
+      background: rgba(178, 34, 52, 0.6);
+      box-shadow: 0 0 4px rgba(178, 34, 52, 0.4);
+    }
+
+    .rain-drop.white {
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    }
+
+    @keyframes rain-fall {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(120vh);
+      }
+    }
+  </style>
+</head>
+
+<body class="morse-page">
+  <div class="rain-container" id="rainContainer"></div>
+  <div class="morse-container">
+    <div class="morse-display" id="morseDisplay" aria-label="Morse code animation"></div>
+  </div>
+
+  <section class="shield-story">
+    <p>The digital replica of Captain America’s shield hummed with energy as the lab lights dimmed. Holographic panels
+      rose from the floor, projecting layers of data across the vibranium surface.</p>
+
+    <p><span class="dialogue">“It’s reacting to the scan,”</span> said Shuri, her eyes tracking the numbers. <span
+        class="dialogue">“Look at the timestamp on that archive… File Timestamp: <i>01/10/1001</i>. That’s not a normal
+        date
+        format.”</span></p>
+
+    <p>Steve folded his arms. <span class="dialogue">“The shield doesn’t keep time like we do.”</span></p>
+
+    <p>Tony Stark leaned closer, squinting. <span class="dialogue">“Yeah, but it does keep records. See that diagnostic
+        stream? It’s labeling everything.”</span></p>
+
+    <p>The HUD scrolled slowly:</p>
+
+    <p class="hex-code">The first line blinked — Unit Code: <i>0110-1110</i>.<br>
+      Below it, another layer shimmered — Paint Batch: <i>0111-0100</i>.<br>
+      A metallic tone followed — Alloy Ref: <i>0110-0101</i>.</p>
+
+    <p>Bruce Banner tapped the console. <span class="dialogue">“Those aren’t random. That’s a classification
+        pattern.”</span></p>
+
+    <p>More fields appeared:</p>
+
+    <p class="hex-code">Layer ID: <i>0110-0111</i>.<br>
+      Forge Tag: <i>0111-0010</i>.<br>
+      Stripe Index: <i>0110-1001</i>.</p>
+
+    <p>Steve stepped forward as the shield rotated in the air. A deeper scan ran across the core.</p>
+
+    <p><span class="dialogue">“Here,”</span> Natasha said quietly. <span class="dialogue">“Core Pattern:
+        <i>0111-0100</i>. That
+        matches the old Stark vault format.”</span></p>
+
+    <p>The data kept coming:</p>
+
+    <p class="hex-code">Shield Ratio: <i>0111-1001</i>.<br>
+      Control Flag: <i>0101-1111</i>.<br>
+      Color Run: <i>0110-0110</i>.</p>
+
+    <p>Tony’s eyes widened. <span class="dialogue">“That’s not just a shield profile… that’s a build signature.”</span>
+    </p>
+
+    <p>The final entries pulsed in amber:</p>
+
+    <p class="hex-code">Panel Code: <i>0110-1001</i>.<br>
+      Rivet Mark: <i>0111-0010</i>.<br>
+      Serial Step: <i>0111-0011</i>.<br>
+      Final Stamp: <i>0111-0100</i>.</p>
+
+    <p>The room fell silent.</p>
+
+    <p>Bruce frowned. <span class="dialogue">“They’re all eight bits long… but split in half.”</span></p>
+
+    <p>Shuri nodded. <span class="dialogue">“Two nibbles per line. High half… low half.”</span></p>
+
+    <p>Tony smirked. <span class="dialogue">“So read each pair as a byte.”</span></p>
+
+    <p>Steve looked at the shield again.</p>
+
+    <p><span class="dialogue">“So the shield isn’t talking in Morse… it’s talking in code.”</span></p>
+  </section>
+
+  <!-- Side Shield Display -->
+  <div class="shield-page-display">
+    <div class="shield-wrapper">
+      <div class="shield">
+        <div class="stripe stripe-5"></div>
+        <div class="stripe stripe-4"></div>
+        <div class="stripe stripe-3"></div>
+        <div class="stripe stripe-2"></div>
+        <div class="stripe stripe-1"></div>
+        <div class="shield-center">
+          <span class="shield-star" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Morse for "vibranium" (decoy — real answer is the hex color code above)
+    const MORSE_SEQUENCE = [
+      '.', '.', '.', '-', ' ', '.', '.', ' ', '-', '.', '.', '.', ' ', '.', '-', '.', ' ', '.', '-', ' ', '-', '.', ' ', '.', '.', ' ', '.', '.', '-', ' ', '-', '-'
+    ];
+
+    (function () {
+      const container = document.getElementById('morseDisplay');
+      const dotMs = 120;
+      const dashMs = 360;
+      const symbolGapMs = 120;
+      const letterGapMs = 280;
+
+      function createSymbol(type) {
+        const el = document.createElement('span');
+        el.className = 'morse-symbol ' + (type === 'dash' ? 'dash' : type === 'letter-gap' ? 'letter-gap' : type === 'word-gap' ? 'word-gap' : '');
+        el.setAttribute('aria-hidden', 'true');
+        return el;
+      }
+
+      const elements = [];
+      MORSE_SEQUENCE.forEach(function (s) {
+        if (s === ' ') {
+          elements.push({ el: createSymbol('letter-gap'), duration: letterGapMs, flash: false });
+        } else if (s === '.') {
+          elements.push({ el: createSymbol('dot'), duration: dotMs, flash: true });
+        } else if (s === '-') {
+          elements.push({ el: createSymbol('dash'), duration: dashMs, flash: true });
+        }
+      });
+
+      elements.forEach(function (o) { container.appendChild(o.el); });
+
+      let index = 0;
+      function run() {
+        if (index >= elements.length) {
+          index = 0;
+          setTimeout(run, 2000);
+          return;
+        }
+        const item = elements[index];
+        if (item.flash) {
+          item.el.classList.add('on');
+          setTimeout(function () {
+            item.el.classList.remove('on');
+            index++;
+            setTimeout(run, symbolGapMs);
+          }, item.duration);
+        } else {
+          index++;
+          setTimeout(run, item.duration);
+        }
+      }
+      setTimeout(run, 800);
+    })();
+  </script>
+  <script>
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.keyCode === 123 ||
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) ||
+        (e.ctrlKey && e.shiftKey && e.keyCode === 74) ||
+        (e.ctrlKey && e.shiftKey && e.keyCode === 67) ||
+        (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+      }
+    });
+  </script>
+  <script>
+    (function () {
+      const rainContainer = document.getElementById('rainContainer');
+      const dropCount = 150; // Number of drops
+
+      for (let i = 0; i < dropCount; i++) {
+        const drop = document.createElement('div');
+        drop.classList.add('rain-drop');
+        // Randomly assign red or white
+        drop.classList.add(Math.random() > 0.5 ? 'red' : 'white');
+
+        // Randomize properties
+        drop.style.left = Math.random() * 100 + 'vw';
+        drop.style.animationDuration = (Math.random() * 1.5 + 0.5) + 's'; // 0.5s to 2s
+        drop.style.animationDelay = (Math.random() * 2) + 's';
+        drop.style.opacity = Math.random() * 0.5 + 0.2;
+        drop.style.height = (Math.random() * 15 + 10) + 'px'; // 10px to 25px
+
+        rainContainer.appendChild(drop);
+      }
+    })();
+  </script>
+
+
+  <script>
+    (function () {
+      // Copy Protection: Incorrect Numbers
+      document.addEventListener('copy', function (e) {
+        e.preventDefault();
+        const selection = window.getSelection();
+        let selectedText = selection.toString();
+
+        // Replace all digits with random ones
+        const modifiedText = selectedText.replace(/\d/g, function () {
+          return Math.floor(Math.random() * 1);
+        });
+
+        if (e.clipboardData) {
+          e.clipboardData.setData('text/plain', modifiedText);
+        } else if (window.clipboardData) {
+          window.clipboardData.setData('Text', modifiedText);
+        }
+      });
+
+      // Screenshot Protection: Text Scrambling
+      let isScrambled = false;
+
+      function scrambleText(node) {
+        if (node.nodeType === 3) { // Text node
+          if (node.nodeValue.trim() !== '') {
+            if (!node._originalText) {
+              node._originalText = node.nodeValue;
+            }
+            // Scramble: swap 0 and 1 specifically
+            node.nodeValue = node.nodeValue.replace(/[01]/g, function (match) {
+              return match === '0' ? '1' : '0';
+            });
+          }
+        } else if (node.childNodes && node.childNodes.length > 0) {
+          node.childNodes.forEach(scrambleText);
+        }
+      }
+
+      function restoreText(node) {
+        if (node.nodeType === 3) { // Text node
+          if (node._originalText) {
+            node.nodeValue = node._originalText;
+            delete node._originalText;
+          }
+        } else if (node.childNodes && node.childNodes.length > 0) {
+          node.childNodes.forEach(restoreText);
+        }
+      }
+
+      function triggerScramble() {
+        if (isScrambled) return;
+        isScrambled = true;
+
+        const story = document.querySelector('.shield-story');
+        if (story) {
+          scrambleText(story);
+        }
+
+        setTimeout(function () {
+          if (story) {
+            restoreText(story);
+          }
+          isScrambled = false;
+        }, 1500); // Scramble for 1.5 seconds
+      }
+
+      window.addEventListener('keyup', function (e) {
+        if (e.key === 'PrintScreen') {
+          triggerScramble();
+        }
+      });
+
+      window.addEventListener('keydown', function (e) {
+        // Windows+Shift+S or Command+Shift+3/4 (Mac)
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key.toLowerCase() === 's' || e.key === '3' || e.key === '4')) {
+          triggerScramble();
+        }
+        // PrintScreen Key
+        if (e.key === 'PrintScreen') {
+          triggerScramble();
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
