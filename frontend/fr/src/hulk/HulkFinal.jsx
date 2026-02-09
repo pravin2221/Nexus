@@ -52,10 +52,10 @@ const HulkFinal = () => {
 
       if (response.data.success) {
         setSuccess(true);
-        // Redirect to dashboard after delay
+        // Redirect back to Challenges after short delay
         setTimeout(() => {
-          navigate('/leaderboard');
-        }, 5000);
+          navigate('/challenges');
+        }, 2000);
       } else {
         setError(response.data.message || 'Invalid flag. Try again.');
       }
@@ -79,7 +79,7 @@ const HulkFinal = () => {
           <div className="success-animation">
             <div className="check-mark">✓</div>
             <h2>TIME STONE CAPTURED!</h2>
-            <p>Redirecting to dashboard...</p>
+            <p>Redirecting to challenges...</p>
           </div>
         </div>
       )}

@@ -25,6 +25,17 @@ const HERO_CHALLENGES = [
   { id: 'bw', hero: 'Black Widow', image: imgBw, title: 'Steganography', description: 'Something is hidden in the image.', points: 125, difficulty: "Medium" },
 ];
 
+// Static file routes per avenger (served from FR public under /nexus)
+// Update paths as you add static folders/files for each hero
+const CHALLENGE_LINKS = {
+  cap: '/nexus/cap/index.html',
+  thor: '/nexus/thor/index.html',
+  ironman: '/nexus/ironman/index.html',
+  deadpool: '/nexus/deadpool/index.html',
+  bw: '/nexus/bw/index.html',
+  hulk: null, // Hulk handled in-app, so no external static link
+};
+
 const slideVariants = {
   enter: (direction) => ({
     x: direction > 0 ? 1000 : -1000,
@@ -105,8 +116,8 @@ const Challenges = () => {
       return;
     }
     const msg = res.data?.message || 'Flag accepted';
-    const q = res.data?.question;
-    alert(q ? `${msg}\n\nQuestion: ${q}` : msg);
+    // Do not show or use the question; only acknowledge success
+    alert(msg);
   };
 
   return (
@@ -311,23 +322,38 @@ const Challenges = () => {
                     </p>
                   </div>
 
+                  {/* Neat placement: enter challenge button below briefing */}
+                  {/* For non-Hulk heroes, open static challenge in new tab */}
+                  {selectedChallenge.id !== 'hulk' && CHALLENGE_LINKS[selectedChallenge.id] && (
+                    <div className="mb-4">
+                      <a
+                        href={CHALLENGE_LINKS[selectedChallenge.id]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full py-3 bg-marvel-red hover:bg-marvel-red-dark text-white text-xs font-bold uppercase rounded-md transition-colors text-center"
+                      >
+                        Enter Challenge
+                      </a>
+                    </div>
+                  )}
+
+                  {/* For Hulk, route in-app to /hulk using React Router */}
+                  {selectedChallenge.id === 'hulk' && (
+                    <div className="mb-4">
+                      <Link
+                        to="/hulk"
+                        className="block w-full py-3 bg-marvel-red hover:bg-marvel-red-dark text-white text-xs font-bold uppercase rounded-md transition-colors text-center"
+                      >
+                        Enter Challenge
+                      </Link>
+                    </div>
+                  )}
+
                   <div className="mt-auto bg-white/5 rounded-xl p-5 border border-white/10 relative">
                     <div className="flex items-center gap-2 mb-3 text-marvel-red">
                       <HiLockClosed />
                       <span className="text-xs font-bold uppercase tracking-widest">Security Protocol</span>
                     </div>
-
-                    {/* Quick access: open external challenge for non-Hulk */}
-                    {selectedChallenge.id !== 'hulk' && (
-                      <a
-                        href="/nexus/ironman/index.html"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="absolute right-1.5 -top-10 px-4 bg-marvel-red hover:bg-marvel-red-dark text-white text-xs font-bold uppercase rounded-md transition-colors"
-                      >
-                        Enter Challenge
-                      </a>
-                    )}
 
                     <form onSubmit={handleSubmitFlag} className="relative">
                       <input
