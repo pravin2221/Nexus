@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valhalla Awaits</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            /* Expecting user to save the image as 'asgard-throne.png' */
+            background: url('asgard-throne.png') no-repeat center center;
+            background-size: cover;
+            overflow: hidden;
+            font-family: 'Cinzel', serif;
+        }
+
+        .plaque-text {
+            position: absolute;
+            /* Estimated position based on the provided image */
+            top: 63%;
+            /* Moved down from 55% */
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            background: linear-gradient(180deg, #fff 0%, #ffd700 40%, #cca000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: #ffd700;
+
+            font-weight: 700;
+            /* Bold */
+            font-size: 2.2rem;
+            /* Adjustable size */
+            text-align: center;
+            letter-spacing: 0.1em;
+            line-height: 1.5;
+
+            /* Enhanced filter for metallic look */
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8));
+            /* pointer-events: none; - Removing to allow selection */
+        }
+
+        .input-container {
+            position: absolute;
+            /* Adjusted for the lower plaque area */
+            top: 79.5%;
+            /* Moved up slightly */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .god-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            /* Slight tint for better visibility */
+            border: none;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            /* Subtle gold underline */
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 0.5rem;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .god-input:focus {
+            border-bottom-color: #ffd700;
+            /* Bright gold on focus */
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .god-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border: 2px solid #cea135;
+            padding: 3rem;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            max-width: 500px;
+            animation: fadeIn 0.5s ease-out;
+            color: #fff;
+        }
+
+        .modal-title {
+            color: #cea135;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            margin-top: 0;
+        }
+
+        .modal-text {
+            color: #e0e0e0;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .secret-code {
+            display: block;
+            margin-top: 1.5rem;
+            font-size: 1.5rem;
+            color: #ffd700;
+            letter-spacing: 0.1em;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px dashed #cea135;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid #cea135;
+            color: #cea135;
+            padding: 0.8rem 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 2rem;
+            text-transform: uppercase;
+        }
+
+        .close-btn:hover {
+            background: #cea135;
+            color: #000;
+            box-shadow: 0 0 15px rgba(206, 161, 53, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hex Text on Top Plaque -->
+    <div class="plaque-text">
+        48 20 4F 44 55 4E 47<br>
+        52 4F 20 45 44 54 4F
+    </div>
+
+    <!-- Input Section on Bottom Plaque -->
+    <div class="input-container">
+        <input type="text" class="god-input" placeholder="Speak the truth." autocomplete="off">
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <h2 class="modal-title">WORTHY</h2>
+            <p class="modal-text">
+                You are worthy of the storm.
+                <span class="secret-code">{ hnsfbdf }</span>
+            </p>
+            <button class="close-btn" onclick="closeModal()">Accept Destiny</button>
+        </div>
+    </div>
+
+    <script>
+        const input = document.querySelector('.god-input');
+        const modal = document.getElementById('successModal');
+
+        input.addEventListener('keyup', (e) => {
+            // Check value regardless of Enter key, or you might want validation on Enter only?
+            // "when i enter GOD OF THUNDER in it" implies automatic check or Enter.
+            // Let's check on every keyup for uppercase match to feel responsive,
+            // or maybe better on 'Enter' or just match.
+            // Let's do exact match check for smoother UX on correct typing.
+            const val = input.value.toUpperCase().trim();
+            if (val === 'GOD OF THUNDER') {
+                showModal();
+            }
+        });
+
+        function showModal() {
+            modal.style.display = 'flex';
+            input.blur(); // Remove focus
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            input.value = ''; // Reset
+        }
+    </script>
+</body>
+
+</html>

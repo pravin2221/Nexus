@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Struck — You Were Not Worthy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600&display=swap');
+
+    :root {
+      --storm-bg: #0a0e14;
+      --storm-dark: #050810;
+      --lightning-cyan: #00d4ff;
+      --text-muted: #6b7a8a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Crimson Text', Georgia, serif;
+      background: var(--storm-bg);
+      color: #c8d4e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, var(--storm-dark) 100%);
+      pointer-events: none;
+    }
+
+    .struck-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .struck-content h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 700;
+      color: #e8f0f8;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    }
+
+    .struck-content p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .return-link {
+      display: inline-block;
+      padding: 0.7rem 1.5rem;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.4);
+      border-radius: 8px;
+      color: var(--lightning-cyan);
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .return-link:hover {
+      background: rgba(0, 212, 255, 0.2);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="struck-content">
+    <h1>You were not worthy.</h1>
+    <p>The Bifrost rejects those who falter. Return when you have learned the path.</p>
+    <a href="index.html" class="return-link">Try Again</a>
+  </div>
+</body>
+</html>
