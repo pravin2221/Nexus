@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await client.post('/auth/login', { email, password });
+            const response = await client.post('/auth/login', { team_name : email, password });
             const { access_token } = response.data;
 
             localStorage.setItem('nexus_token', access_token);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (email, password) => {
         try {
-            await client.post('/auth/signup', { email, password });
+            await client.post('/auth/signup', { team_name : email, password });
             return { success: true };
         } catch (error) {
             return {
