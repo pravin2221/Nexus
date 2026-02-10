@@ -102,6 +102,67 @@
             border-radius: 10px;
             box-shadow: 0 0 30px rgba(0,234,255,0.8);
         }
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .keypad-btn {
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: rgba(0, 234, 255, 0.08);
+            border: 2px solid #00eaff;
+            color: #00eaff;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 0 8px #00eaff inset;
+        }
+
+        .keypad-btn:hover {
+            background: rgba(0, 234, 255, 0.22);
+            box-shadow: 0 0 15px #00eaff, 0 0 25px #00eaff inset;
+            transform: translateY(-2px);
+        }
+
+        .special-btn {
+            letter-spacing: 2px;
+        }
+
+        .special-btn.red {
+            border-color: #ff4444;
+            color: #ff4444;
+            box-shadow: 0 0 10px #ff4444 inset;
+        }
+
+        .special-btn.red:hover {
+            background: rgba(255, 68, 68, 0.2);
+            box-shadow: 0 0 18px #ff4444, 0 0 25px #ff4444 inset;
+        }
+
+        .special-btn.green {
+            border-color: #00ff99;
+            color: #00ff99;
+            box-shadow: 0 0 10px #00ff99 inset;
+        }
+
+        .special-btn.green:hover {
+            background: rgba(0, 255, 153, 0.2);
+            box-shadow: 0 0 18px #00ff99, 0 0 25px #00ff99 inset;
+        }
+        .modal {
+            overflow-y: auto;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .modal-content {
+            margin-top: 4% !important;
+        }
+
     </style>
 </head>
 <body>
@@ -113,26 +174,79 @@
 
 <!-- Tony Stark Verification Modal -->
 <div id="tonyVerifyModal" class="modal">
-    <div class="modal-content">
-        <h2>STARK AUTHENTICATION</h2>
-        <p>Love you <span style="color:#ffaa00">___</span></p>
-        <input type="text" id="answerInput" placeholder="Answer..." />
-        <br>
-        <button onclick="verifyAnswer()">Verify</button>
-        <button onclick="cancelVerification()">Cancel</button>
-        <div class="error" id="errorMsg">Incorrect answer. Try again.</div>
+    <div class="modal-content" style="background:rgba(0,10,20,0.85); backdrop-filter: blur(6px);">
+
+        <h2 style="margin-bottom:15px; text-shadow: 0 0 12px #00eaff;">STARK AUTHENTICATION</h2>
+        <p>Love you <span style="color:#ffaa00;">___</span></p>
+
+        <!-- Keypad Container -->
+        <div id="keypadBox"
+            style="
+                width: 420px;                  /* increased width */
+                margin: 35px auto;
+                padding: 40px 35px;            /* more horizontal padding */
+                border-radius: 22px;
+                background: rgba(0, 25, 35, 0.60);
+                border: 2px solid #00eaff;
+                box-shadow:
+                    0 0 25px #00eaff inset,
+                    0 0 35px rgba(0,234,255,0.6),
+                    0 0 50px rgba(0,234,255,0.25);
+                backdrop-filter: blur(10px);
+            "
+        >
+
+
+
+            <!-- Display -->
+            <div id="displayBox"
+                style="
+                    width:100%;
+                    height:55px;
+                    background:rgba(0,0,0,0.6);
+                    border:2px solid #00eaff;
+                    border-radius:10px;
+                    margin-bottom:20px;
+                    font-size:2em;
+                    letter-spacing:8px;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    box-shadow:0 0 12px #00eaff inset;
+                "
+            ></div>
+
+            <!-- NUMPAD -->
+            <div class="keypad-grid">
+                <button class="keypad-btn">1</button>
+                <button class="keypad-btn">2</button>
+                <button class="keypad-btn">3</button>
+                <button class="keypad-btn">4</button>
+                <button class="keypad-btn">5</button>
+                <button class="keypad-btn">6</button>
+                <button class="keypad-btn">7</button>
+                <button class="keypad-btn">8</button>
+                <button class="keypad-btn">9</button>
+                <button class="keypad-btn">0</button>
+                <button id="clearBtn" class="keypad-btn special-btn red">CLR</button>
+                <button id="enterBtn" class="keypad-btn special-btn green">ENTER</button>
+            </div>
+        </div>
+
+        <div class="error" id="errorMsg">Incorrect. Try again.</div>
     </div>
 </div>
 
 <!-- Success Modal with Image -->
 <div id="successModal" class="success-modal">
     <div class="success-content">
-        <img src="https://i.pinimg.com/736x/7c/32/a5/7c32a5299546135c7246ff2ce968b4b2.jpg" alt="Tony Stark Cookie" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23000%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%2300eaff%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ETony Stark eating a cookie%3C/text%3E%3C/svg%3E'">
+        <img src="ironmancookie.jpg" alt="Tony Stark Cookie" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23000%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22%2300eaff%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ETony Stark eating a cookie%3C/text%3E%3C/svg%3E'">
+
     </div>
 </div>
 
 <script>
-// Block direct access
+
 if (sessionStorage.getItem("ironman_unlock") !== "1") {
     document.body.innerHTML = "<h1 style='color:red'>ACCESS DENIED</h1>";
 }
@@ -150,23 +264,25 @@ function getCookie(name) {
     return null;
 }
 
-// Set cookie if not exists
-if (getCookie("isTony") === null) {
-    document.cookie = "isTony=0; path=/";
+if (getCookie("arc_reactor") === null) {
+    document.cookie = "arc_reactor=unstable; path=/";
 }
 
-// Check if user modified cookie to 1
-if (getCookie("isTony") === "1") {
-    // Obfuscated flag (Base64 encoded)
-    let encodedFlag = "cGljb0NURnt0MG55X3N0NHJrXzFzX2lyMG5tNG59";
-    let decodedFlag = atob(encodedFlag);
-    
-    // Show flag
-    let flagDiv = document.createElement("div");
-    flagDiv.style.cssText = "margin-top:30px; padding:20px; border:2px solid #00ff00; background:#001a00; color:#00ff00; font-weight:bold; font-size:1.2em; border-radius:5px;";
-    flagDiv.innerHTML = "🚩 FLAG: <code>" + decodedFlag + "</code>";
-    document.body.appendChild(flagDiv);
+if (getCookie("arc_reactor") === "stable") {
+    let eF = "Ym1WWWRYTjdkREJ1ZVY5emREUnlhMTh4YzE5cGNqQnViVFJ1ZlE9PQ==";
+    let dF = atob(atob(eF));
+
+    let fDiv = document.createElement("div");
+    fDiv.style.cssText =
+        "margin-top:30px; padding:20px; border:2px solid #00ff00; background:#001a00; color:#00ff00; font-weight:bold; font-size:1.2em; border-radius:5px;";
+
+    const k = String.fromCharCode;
+    const w = k(70)+k(76)+k(65)+k(71);
+
+    fDiv.innerHTML = "🚩 " + w + ": <code>" + dF + "</code>";
+    document.body.appendChild(fDiv);
 }
+
 
 // Draw Arc Reactor
 let c = document.getElementById("reactor");
@@ -195,18 +311,14 @@ function drawReactor() {
         ctx.stroke();
     }
 
-    // Real hitbox beam (no visual clue)
-    // You can hide this or make it subtle
 }
 drawReactor();
 
-// Handle clicks (inspect-proof)
 c.onclick = function(e) {
     let rect = c.getBoundingClientRect();
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
-    // Secret hitbox
     if (x >= 190 && x <= 210 && y >= 80 && y <= 120) {
         showVerificationModal();
     } else {
@@ -222,31 +334,47 @@ function showVerificationModal() {
     document.getElementById("errorMsg").style.display = "none";
 }
 
-// Verify answer (obfuscated)
-function verifyAnswer() {
-    let input = document.getElementById("answerInput").value.trim();
-    
-    // Obfuscated check: 3000 encoded
-    let _correct = String.fromCharCode(51,48,48,48); // "3000"
-    
-    if (input === _correct) {
-        let modal = document.getElementById("tonyVerifyModal");
-        modal.style.display = "none";
-        
-        // Show success image modal
+let codeInput = "";
+
+// Attach numpad click events
+document.querySelectorAll(".keypad-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        let val = btn.innerText;
+
+        if (val >= "0" && val <= "9") {
+            if (codeInput.length < 4) {
+                codeInput += val;
+                document.getElementById("displayBox").innerText = codeInput;
+            }
+        }
+    });
+});
+
+// CLEAR
+document.getElementById("clearBtn").onclick = function() {
+    codeInput = "";
+    document.getElementById("displayBox").innerText = "";
+};
+
+// ENTER
+document.getElementById("enterBtn").onclick = function() {
+    let _correct = "3000";
+
+    if (codeInput === _correct) {
+        document.getElementById("tonyVerifyModal").style.display = "none";
         let successModal = document.getElementById("successModal");
         successModal.style.display = "block";
-        
-        // Close success modal on click
+
         successModal.onclick = function() {
             successModal.style.display = "none";
         };
     } else {
         document.getElementById("errorMsg").style.display = "block";
-        document.getElementById("answerInput").value = "";
-        document.getElementById("answerInput").focus();
+        codeInput = "";
+        document.getElementById("displayBox").innerText = "";
     }
-}
+};
+
 
 // Cancel verification
 function cancelVerification() {
