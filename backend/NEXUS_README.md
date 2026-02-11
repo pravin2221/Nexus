@@ -602,3 +602,8 @@ backend/
 ✅ **Scalable architecture** ready for MongoDB clustering and Redis caching  
 
 **Perfect for**: Educational CTF events, team challenges, or security training with accountability and detailed tracking.
+
+
+
+
+
