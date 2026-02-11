@@ -1,13 +1,16 @@
-name: CI/CD Pipeline
+name: Backend CI
 
 on:
   push:
     branches: ["main", "master"]
+    paths:
+      - "backend/**"
   pull_request:
     branches: ["main", "master"]
+    paths:
+      - "backend/**"
 
 jobs:
-
   backend-test:
     name: Backend CI
     runs-on: ubuntu-latest
@@ -43,33 +46,3 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t nexus-backend:latest .
-
-
-
-  frontend-build:
-    name: Frontend CI
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./frontend/nexus
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/nexus/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Lint
-        run: npm run lint || echo "No lint configured"
-
-      - name: Build project
-        run: npm run build
