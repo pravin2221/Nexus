@@ -11,6 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the container at /app
+# This includes .env since it's not in .dockerignore
 COPY . .
 
 # Make port 5000 available to the world outside this container
