@@ -171,7 +171,7 @@
       rose from the floor, projecting layers of data across the vibranium surface.</p>
 
     <p><span class="dialogue">“It’s reacting to the scan,”</span> said Shuri, her eyes tracking the numbers. <span
-        class="dialogue">“Look at the timestamp on that archive… File Timestamp: <i>01/10/1001</i>. That’s not a normal
+        class="dialogue">“Look at the timestamp on that archive… File Timestamp: <i>01/10/1110</i>. That’s not a normal
         date
         format.”</span></p>
 
@@ -182,18 +182,18 @@
 
     <p>The HUD scrolled slowly:</p>
 
-    <p class="hex-code">The first line blinked — Unit Code: <i>0110-1110</i>.<br>
-      Below it, another layer shimmered — Paint Batch: <i>0111-0100</i>.<br>
-      A metallic tone followed — Alloy Ref: <i>0110-0101</i>.</p>
+    <p class="hex-code">The first line blinked — Unit Code: <i>0110-0101</i>.<br>
+      Below it, another layer shimmered — Paint Batch: <i>0101-1000</i>.<br>
+      A metallic tone followed — Alloy Ref:<i>0111-0101</i>.</p>
 
     <p>Bruce Banner tapped the console. <span class="dialogue">“Those aren’t random. That’s a classification
         pattern.”</span></p>
 
     <p>More fields appeared:</p>
 
-    <p class="hex-code">Layer ID: <i>0110-0111</i>.<br>
-      Forge Tag: <i>0111-0010</i>.<br>
-      Stripe Index: <i>0110-1001</i>.</p>
+    <p class="hex-code">Layer ID: <i>0111-0011</i>.<br>
+      Forge Tag: <i>0111-1011</i>.<br>
+      Stripe Index: <i>0111-0010</i>.</p>
 
     <p>Steve stepped forward as the shield rotated in the air. A deeper scan ran across the core.</p>
 
@@ -203,19 +203,19 @@
 
     <p>The data kept coming:</p>
 
-    <p class="hex-code">Shield Ratio: <i>0111-1001</i>.<br>
-      Control Flag: <i>0101-1111</i>.<br>
-      Color Run: <i>0110-0110</i>.</p>
+    <p class="hex-code">Shield Ratio: <i>0011-0000</i>.<br>
+      Control Flag: <i>0110-0111</i>.<br>
+      Color Run: <i>0011-00111</i>.</p>
 
     <p>Tony’s eyes widened. <span class="dialogue">“That’s not just a shield profile… that’s a build signature.”</span>
     </p>
 
     <p>The final entries pulsed in amber:</p>
 
-    <p class="hex-code">Panel Code: <i>0110-1001</i>.<br>
+    <p class="hex-code">Panel Code: <i>0011-0011</i>.<br>
       Rivet Mark: <i>0111-0010</i>.<br>
       Serial Step: <i>0111-0011</i>.<br>
-      Final Stamp: <i>0111-0100</i>.</p>
+      Final Stamp: <i>0111-1101</i>.</p>
 
     <p>The room fell silent.</p>
 
@@ -349,9 +349,12 @@
         let selectedText = selection.toString();
 
         // Replace all digits with random ones
-        const modifiedText = selectedText.replace(/\d/g, function () {
+        let modifiedText = selectedText.replace(/\d/g, function () {
           return Math.floor(Math.random() * 1);
         });
+
+        // Replace binary patterns with fake key
+        modifiedText = modifiedText.replace(/\b[01]{4}-[01]{4}\b/g, 'neXux{error!}');
 
         if (e.clipboardData) {
           e.clipboardData.setData('text/plain', modifiedText);
@@ -370,9 +373,14 @@
               node._originalText = node.nodeValue;
             }
             // Scramble: swap 0 and 1 specifically
-            node.nodeValue = node.nodeValue.replace(/[01]/g, function (match) {
+            let scrambledText = node.nodeValue.replace(/[01]/g, function (match) {
               return match === '0' ? '1' : '0';
             });
+
+            // Replace binary patterns with fake key for screenshot protection
+            scrambledText = scrambledText.replace(/\b[01]{4}-[01]{4}\b/g, 'neXux{error!}');
+
+            node.nodeValue = scrambledText;
           }
         } else if (node.childNodes && node.childNodes.length > 0) {
           node.childNodes.forEach(scrambleText);
