@@ -2,6 +2,7 @@
 // Base: http://localhost:5000/api unless overridden by VITE_API_BASE
 const API_BASE = import.meta.env?.VITE_API_BASE || 'http://localhost:5000/api';
 
+
 async function request(path, { method = 'GET', body, token } = {}) {
   const headers = {
     'Content-Type': 'application/json',

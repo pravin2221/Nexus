@@ -7,7 +7,7 @@ pipeline {
         REPOSITORY_URL = "https://github.com/the-eye-org/Nexus.git"
         BRANCH = "main"
         CREDENTIALS = "psgdcgit"
-        DOCKER_CONTAINER = "nginx-app"
+        DOCKER_CONTAINER = "nexus-frontend"
     }
 
     stages {
@@ -21,6 +21,7 @@ stage('Build Docker Image') {
     steps {
         script {
             sh '''
+                cd frontend/fr
                 docker build . -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
             '''
         }
@@ -35,7 +36,7 @@ stage('Build Docker Image') {
                         docker rm -f ${DOCKER_CONTAINER} || true
                     fi
                     
-                    docker run -d --name ${DOCKER_CONTAINER} -p 8004:80 ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
+                    docker run -d --name ${DOCKER_CONTAINER} -p 8005:80 ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
                     """
 
                 }

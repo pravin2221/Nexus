@@ -4,6 +4,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt, get_jwt_identity
 from models import teams_collection
 from datetime import datetime, timedelta
 
+
 def strong_auth_required(f):
     """
     Strong Authentication Decorator
