@@ -15,10 +15,10 @@ def create_app():
     jwt.init_app(app)
     limiter.init_app(app)
     
-    # Register Blueprints
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(game_bp, url_prefix="/api/game")
-    app.register_blueprint(leaderboard_bp, url_prefix="/api/leaderboard")
+    # Register Blueprints with base prefix
+    app.register_blueprint(auth_bp, url_prefix="/nex-backend/api/auth")
+    app.register_blueprint(game_bp, url_prefix="/nex-backend/api/game")
+    app.register_blueprint(leaderboard_bp, url_prefix="/nex-backend/api/leaderboard")
     
     # Root Endpoint
     @app.route("/")
@@ -27,6 +27,19 @@ def create_app():
             "message": "NEXUS v2.0 - Team Authentication System",
             "version": "2.0.0",
             "status": "ONLINE"
+        })
+    
+    @app.route("/nex-backend")
+    def base_route():
+        return jsonify({
+            "message": "NEXUS v2.0 - Team Authentication System",
+            "version": "2.0.0",
+            "status": "ONLINE",
+            "endpoints": {
+                "auth": "/nex-backend/api/auth",
+                "game": "/nex-backend/api/game",
+                "leaderboard": "/nex-backend/api/leaderboard"
+            }
         })
         
     # Database Init
