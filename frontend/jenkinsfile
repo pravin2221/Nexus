@@ -28,11 +28,20 @@ pipeline {
         stage('Stop Existing Container') {
             steps {
                 script {
-                    // Safely stop and remove existing container if it exists
+                    // Stop any container using port 8005
                     sh '''
-                        if [ "$(docker ps -q --filter name=nexus-frontend)" ]; then
-                            docker stop nexus-frontend
-                            docker rm nexus-frontend
+                        CONTAINER_ID=$(docker ps -q --filter "publish=8005")
+                        if [ ! -z "$CONTAINER_ID" ]; then
+                            echo "Stopping container on port 8005: $CONTAINER_ID"
+                            docker stop $CONTAINER_ID
+                            docker rm $CONTAINER_ID
+                        fi
+                        
+                        # Also stop by name if it exists
+                        if [ "$(docker ps -aq --filter name=nexus-frontend)" ]; then
+                            echo "Stopping nexus-frontend container"
+                            docker stop nexus-frontend || true
+                            docker rm nexus-frontend || true
                         fi
                     '''
                 }
