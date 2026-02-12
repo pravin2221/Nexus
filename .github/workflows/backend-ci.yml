@@ -14,6 +14,12 @@ jobs:
   backend-test:
     name: Backend CI
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      IMAGE_NAME: ghcr.io/the-eye-org/nexus-backend
 
     defaults:
       run:
@@ -44,5 +50,24 @@ jobs:
       - name: Run tests
         run: pytest || echo "No tests found"
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build Docker image
-        run: docker build -t nexus-backend:latest .
+        run: |
+          VERSION=0.1-${GITHUB_SHA::7}
+          docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$VERSION .
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Push Docker image to GHCR
+        run: |
+          docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:$VERSION
+
+      - name: Notify Jenkins
+        run: |
+          curl --insecure "${{ secrets.JENKINS_BACKEND_URL }}"
